@@ -1,6 +1,6 @@
 %% ATTITUDE COMPUTATION
 % Author: Laura Train
-% Date of the last update Jan 19 2021
+% Date of the last update Jan 21 2021
 %
 % Checklist:
 % DONE:

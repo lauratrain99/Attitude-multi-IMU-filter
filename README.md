@@ -1,5 +1,19 @@
 # Attitude-multi-IMU-filter
-Extended Kalman filter for attitude estimation on a multi-IMU configuration
+Extended Kalman filter for attitude estimation on a multi-IMU configuration.
+
+The file containing the simulation is multiple_imu. 
+It contains many plots with all the info about the z-axis constant rotation simulation. 
+There are many plots containing many info, for the goal of comparing the motion of the center of mass vs the motion of each IMU:
+
+- Plots 6, 7, 8 for IMU1.
+
+- Plots 14, 15, 16 for IMU2.
+
+- Plots 22, 23, 24 for IMU3.
+
+- Plots 30, 31, 32 for IMU4.
+
+Additionally, the code includes a final part of verification in which the theoretical values are compared with the ones obtained during the simulation.
 
 
  Date of the last update Jan 19 2021
