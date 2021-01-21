@@ -23,7 +23,8 @@ function [imuI] = VIMU_to_IMU(imuMAIN, imuI)
 %         DCMvb: 3x3 DCM from the VIMU reference frame to the imuN body reference frame 
 %            wb: Nx3 angular velocity in imuN body reference frame (radians)
 %            fb: Nx3 accelerations vector in imuN body reference frame (m/s^2)
-%            mb: Nx3 magnetic field vector in NED frame of the imuN body reference frame
+%            mb: Nx3 magnetic field vector in NED frame of the imuN body
+%            reference frame (Gauss)
 %  
 %%
 
@@ -39,7 +40,8 @@ function [imuI] = VIMU_to_IMU(imuMAIN, imuI)
             dt = imuMAIN.t(i) - imuMAIN.t(i-1);
             imuMAIN.alpha(i,:) = (imuMAIN.wv(i,:) - imuMAIN.wv(i-1,:))/dt;
         end
-        
+         %imuI.fb(i,:) = imuI.DCMvb *(cross(imuMAIN.alpha(i,:)', imuI.Rvb)) + imuI.DCMvb *(cross(imuMAIN.wv(i,:)', cross(imuMAIN.wv(i,:)', imuI.Rvb)));
         imuI.fb(i,:) = imuI.DCMvb * imuMAIN.fv(i,:)' + imuI.DCMvb *(cross(imuMAIN.alpha(i,:)', imuI.Rvb)) + imuI.DCMvb *(cross(imuMAIN.wv(i,:)', cross(imuMAIN.wv(i,:)', imuI.Rvb)));
     end
+    
 end

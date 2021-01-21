@@ -119,7 +119,7 @@ kf.R = diag([imu.a_std, imu.m_std]).^2;
 %kf.R = diag([0.0001, 0.0001, 0.0001]).^2;
 
 % Propagate prior estimates to get xp(1) and Pp(1)
-kf = kf_update_acc( kf );
+kf = kf_update( kf );
 
 
 

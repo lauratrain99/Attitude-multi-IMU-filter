@@ -26,12 +26,15 @@ Extended Kalman filter for attitude estimation on a multi-IMU configuration
           6. Plot the data from the initial synthetic data to see if it
              coincides with the transformed data.
 
-          7. Apply the EKF to each of the resultling center of mass data
+          7. Verify if the simulated motion for the IMUs coincides with
+             their theoretical value for constant z-axis rotation.
+
+          8. Apply the EKF to each of the resultling center of mass data
              coming from each of the IMUs. Results: four different
              attitudes coming from each IMU data.
 
  TO DO:
 
-          8. After step 5, combine/fuse the center of mass data obtained
+          9. After step 5, combine/fuse the center of mass data obtained
           from each IMU and then apply the EKF with only one center of mass data
 
