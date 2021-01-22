@@ -7,7 +7,7 @@ The body whose attitude is to be analyzed, contains four IMUs located at each co
 
 The generation of synthetic data from a known physical motion allows to test the algorithms at the same time as the code development keeps on. This makes the verification method much successful as well as avoiding errors for future real measurement implementation.
 
-For the purpose of verification of the kinematic principles, the file multiple_imu.m, available in synthetic-data/kinematic_v&v was developed. 
+For the purpose of verification of the kinematic principles, the file *multiple_imu.m*, available in the path *synthetic-data/kinematic_v&v*, was developed. 
 The first check was to compare if the simulated motion of the center of mass coincides with the transformed motion (first from the simulated to the local IMU and then back from the local IMU to the center of mass). If these two coincide, it means that the method to convert from VIMU to IMU and the one to convert from IMU to VIMU apply the same principles.
 The plots checking this condition, each IMU containing angular velocity, accelerations and local magnetic field:
 
@@ -20,7 +20,6 @@ The plots checking this condition, each IMU containing angular velocity, acceler
 - Plots 19, 20, 21 for IMU4.
 
 However, it is also necessary to compare the motion of the center of mass with the motion of each of the IMUs. For the z-axis constant motion, the components of the acceleration in the body reference frame of each IMU are easy to compute analytically.
-The file containing the simulation is multiple_imu. 
 The plots checking this condition:
 
 - Plots 4, 5, 6 for IMU1.
@@ -62,7 +61,7 @@ Possible design architectures:
 
 1. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
     Perform the sensor fusion by averaging all the readings at the center
-    of mass. Perform the EKF only once with those readings. Available in synthetic-data/data-fusion/architecture-1, the file EKF_arch1.m contains the main program.
+    of mass. Perform the EKF only once with those readings. Available in the path *synthetic-data/data-fusion/architecture-1*, the file *EKF_arch1.m* contains the main program.
 
  2. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
     Perform the EKF four times, one for each of the CM readings. Average the readings at the center of mass. Code not available yet.
