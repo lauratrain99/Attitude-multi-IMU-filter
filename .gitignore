@@ -45,3 +45,5 @@ codegen/
 
 # Octave session info
 octave-workspace
+
+synthetic-data/simulation/imu2cm.m

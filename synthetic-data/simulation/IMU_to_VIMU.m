@@ -17,8 +17,8 @@ function [imuMAIN] = IMU_to_VIMU(imuI)
 %           imuMAIN, IMU at the center of mass data structure (VIMU)
 %             t: Nx1 time vector (seconds)
 %         alpha: Nx3 angular acceleration of the VIMU in VIMU reference frame (rad/s^2)
-%            fv: Nx3 accelerations vector in body frame XYZ of the VIMU (m/s^2).
-%            wv: Nx3 turn rates vector in body frame XYZ of the VIMU(radians/s).
+%            fv: Nx3 accelerations vector in body frame XYZ of the VIMU (m/s^2)
+%            wv: Nx3 turn rates vector in body frame XYZ of the VIMU(radians/s)
 %            mv: Nx3 magnetic field vector in NED frame of the VIMU (Gauss)
 %  
 %%
