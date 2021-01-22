@@ -69,7 +69,9 @@ Possible design architectures:
  (To be continued with other alternatives)
 
  Checklist:
+
  DONE:
+
           1. Obtain the data readings for each IMU.
            
           2. Include error characterization and consequent noise in the
