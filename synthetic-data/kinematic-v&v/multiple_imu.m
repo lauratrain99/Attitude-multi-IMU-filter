@@ -35,9 +35,10 @@
 %% Use NaveGo functions
 matlabrc
 
-addpath ../ins/
-addpath ../conversions/
-addpath ../kalman/
+addpath ../../ins/
+addpath ../../conversions/
+addpath ../../kalman/
+addpath ../simulation
 
 t = 0:1/100:10;
 
