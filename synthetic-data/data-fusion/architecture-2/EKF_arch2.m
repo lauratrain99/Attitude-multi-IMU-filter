@@ -1,6 +1,6 @@
 %% MULTIPLE IMU EKF 
 % Author: Laura Train
-% Date of the last update Jan 22 2021
+% Date of the last update Jan 29 2021
 %
 % The goal of this script is to implement the EKF with the multi-IMU
 % configuration to estimate attitude generating synthetic data for a known
@@ -42,9 +42,9 @@
 matlabrc
 
 addpath ../../simulation
-addpath ../../ins/
-addpath ../../conversions/
-addpath ../../kalman/
+addpath ../../../ins/
+addpath ../../../conversions/
+addpath ../../../kalman/
 
 t = 0:1/100:10;
 
@@ -220,8 +220,14 @@ imu4.m_std = [0.005, 0.005, 0.005];
 
 
 %% SENSOR FUSION - EXTENDED KALMAN FILTER
-% Attitude EKF
-[navimu1MAINcomputed , imu1MAINcomputed] = multiple_imu_filter(imu1, imu2, imu3, imu4);
+% Attitude EKF for each sensor
+[nav1, imuCM1] = imu2vimu_ekf(imu1);
+[nav2, imuCM2] = imu2vimu_ekf(imu2);
+[nav3, imuCM3] = imu2vimu_ekf(imu3);
+[nav4, imuCM4] = imu2vimu_ekf(imu4);
+
+% Fusion of the four measurements
+[navCM] = attitude_average(nav1, nav2, nav3, nav4);
 
 %% PLOT RESULTS
 % Compute attitude only using angular velocity data
@@ -232,23 +238,23 @@ euler = rad2deg(euler);
 
 % Plot comparison between true attitude vs EKF output
 figure(1)
-plot(navimu1MAINcomputed.t, quat(:,1), 'r', navimu1MAINcomputed.t, quat(:,2), 'c', navimu1MAINcomputed.t, quat(:,3), 'g', navimu1MAINcomputed.t, quat(:,4), 'k', ...
-     navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,1), 'or', navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,2), 'oc', navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,3), 'og', navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,4), 'ok')
+plot(navCM.t, quat(:,1), 'r', navCM.t, quat(:,2), 'c', navCM.t, quat(:,3), 'g', navCM.t, quat(:,4), 'k', ...
+     navCM.t, navCM.qua(:,1), 'or', navCM.t, navCM.qua(:,2), 'oc', navCM.t, navCM.qua(:,3), 'og', navCM.t, navCM.qua(:,4), 'ok')
 xlabel('Time [s]')
 ylabel('quaternions')
 legend('q1', 'q2,', 'q3', 'q4', 'q1 Kalman','q2 Kalman','q3 Kalman', 'q4 Kalman')
 grid minor
-title('Attitude computer vs Kalman filter. Quaternions. Architecture 1.')
+title('Attitude computer vs Kalman filter. Quaternions. Architecture 2.')
 legend('location','southeast')
 
 
 figure(2)
-plot(navimu1MAINcomputed.t, euler(:,1), 'r', navimu1MAINcomputed.t, euler(:,2), 'c', navimu1MAINcomputed.t, euler(:,3), 'g', ...
-     navimu1MAINcomputed.t, navimu1MAINcomputed.roll, 'or', navimu1MAINcomputed.t, navimu1MAINcomputed.pitch, 'oc', navimu1MAINcomputed.t, navimu1MAINcomputed.yaw, 'og')
+plot(navCM.t, euler(:,1), 'r', navCM.t, euler(:,2), 'c', navCM.t, euler(:,3), 'g', ...
+     navCM.t, navCM.roll, 'or', navCM.t, navCM.pitch, 'oc', navCM.t, navCM.yaw, 'og')
 xlabel('Time [s]')
 ylabel('Euler angles [deg]')
 legend('roll', 'pitch,', 'yaw', 'roll Kalman','pitch Kalman','yaw Kalman')
 grid minor
-title('Attitude computer vs Kalman filter. Euler angles. Architecture 1.')
+title('Attitude computer vs Kalman filter. Euler angles. Architecture 2.')
 legend('location','southeast')
 

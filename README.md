@@ -1,5 +1,5 @@
 # Attitude-multi-IMU-filter
-Date of the last update Jan 22 2021.
+Date of the last update Jan 29 2021.
 
 This repo contains the code development for the data fusion algorithm of a multi-IMU configuration to estimate attitude using an Extended Kalman filter.
 
@@ -64,12 +64,14 @@ Possible design architectures:
     of mass. Perform the EKF only once with those readings. Available in the path *synthetic-data/data-fusion/architecture-1*, the file *EKF_arch1.m* contains the main program.
 
  2. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
-    Perform the EKF four times, one for each of the CM readings. Average the readings at the center of mass. Code not available yet.
+    Perform the EKF four times, one for each of the CM readings. Average the readings at the center of mass. Available in the path *synthetic-data/data-fusion/architecture-2*, the file *EKF_arch2.m* contains the main program.
 
  (To be continued with other alternatives)
 
  Checklist:
+
  DONE:
+
           1. Obtain the data readings for each IMU.
            
           2. Include error characterization and consequent noise in the
@@ -87,8 +89,6 @@ Possible design architectures:
 
                - Apply the EKF to the averaged values.
 
-TO BE DONE:
-
           4. Build the second design achitecture. Steps:
 
                - Convert the data from each IMU to generate angular
@@ -98,3 +98,7 @@ TO BE DONE:
                - Apply the EKF to the each CM readings. Four EKFs in total
 
                - Average the four outputs of the EKF.
+
+TO BE DONE:
+
+          5. Design a program to evaluate the performance of the different algorithm alternatives. Establish conditions to choose one model or other.
