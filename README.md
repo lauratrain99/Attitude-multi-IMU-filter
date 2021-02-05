@@ -59,12 +59,16 @@ Once the kinematic transformations are verified, it is time to apply the data fi
 
 Possible design architectures:
 
-1. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
+**Version 1**. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
     Perform the sensor fusion by averaging all the readings at the center
     of mass. Perform the EKF only once with those readings. Available in the path *synthetic-data/data-fusion/architecture-1*, the file *EKF_arch1.m* contains the main program.
 
- 2. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
+**Version 2**. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
     Perform the EKF four times, one for each of the CM readings. Average the readings at the center of mass. Available in the path *synthetic-data/data-fusion/architecture-2*, the file *EKF_arch2.m* contains the main program.
+
+**Version 3**. Perform the EKF four times, one for each of the IMU readings. Initialize the state vector as the angular error of the body at the center of mass and the bias of the corresponding IMU.
+    The reference system change from the IMU body reference frame to the center of mass of the body is performed to compute the residual of the EKF at each step inside the EKF loop.
+    Available in the path *synthetic-data/data-fusion/architecture-3*, the file *EKF_arch3.m* contains the main program.
 
  (To be continued with other alternatives)
 
@@ -98,7 +102,18 @@ Possible design architectures:
                - Apply the EKF to the each CM readings. Four EKFs in total
 
                - Average the four outputs of the EKF.
+          
+          5. Build the third design architecture. Steps:
+                
+               - State vector of angular changes of the center of mass and 
+                 bias of each IMU.
+
+               - Each of the measurements from the IMU is converted into the 
+                 center of mass acc, ang velocity and mag field when computing
+                 the residual at each step of the EKF.
+
+
 
 TO BE DONE:
 
-          5. Design a program to evaluate the performance of the different algorithm alternatives. Establish conditions to choose one model or other.
+          6. Design a program to evaluate the performance of the different algorithm alternatives. Establish conditions to choose one model or other.

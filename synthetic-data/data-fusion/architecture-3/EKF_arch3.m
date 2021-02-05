@@ -1,6 +1,6 @@
 %% MULTIPLE IMU EKF 
 % Author: Laura Train
-% Date of the last update Jan 29 2021
+% Date of the last update Feb 1 2021
 %
 % The goal of this script is to implement the EKF with the multi-IMU
 % configuration to estimate attitude generating synthetic data for a known
@@ -13,7 +13,10 @@
 %    of mass. Perform the EKF only once with those readings.
 % 2. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
 %    Perform the EKF four times, one for each of the CM readings.
-%
+% 3. Convert the data from each IMU to generate one CM (center of mass)
+%    data per IMU. Convert fb, wb and mb at each iteration inside the EKF
+%    function.
+%    Perform the EKF four times, one for each of the CM readings.
 % (To be continued with other alternatives)
 %
 % Checklist:
@@ -37,6 +40,12 @@
 %               velocity, accelerations and local magnetic field at the
 %               center of mass.
 %               - Apply the EKF to the each CM readings. Four EKFs in total
+%
+%          5. Build the third design achitecture. Steps:
+%               - Convert the data from each IMU to generate angular
+%               velocity, accelerations and local magnetic field at the
+%               center of mass each time for each iteration inside of each
+%               EKF. Four EKFs in total.
 
 %% Use NaveGo functions
 matlabrc
@@ -221,10 +230,10 @@ imu4.m_std = [0.005, 0.005, 0.005];
 
 %% SENSOR FUSION - EXTENDED KALMAN FILTER
 % Attitude EKF for each sensor
-[nav1, imuCM1] = imu2vimu_ekf(imu1);
-[nav2, imuCM2] = imu2vimu_ekf(imu2);
-[nav3, imuCM3] = imu2vimu_ekf(imu3);
-[nav4, imuCM4] = imu2vimu_ekf(imu4);
+[nav1] = arch3_imu2cm_filter(imu1);
+[nav2] = arch3_imu2cm_filter(imu2);
+[nav3] = arch3_imu2cm_filter(imu3);
+[nav4] = arch3_imu2cm_filter(imu4);
 
 % Fusion of the four measurements
 [navCM] = attitude_average(nav1, nav2, nav3, nav4);
@@ -255,7 +264,7 @@ xlabel('Time [s]')
 ylabel('Euler angles [deg]')
 legend('roll', 'pitch,', 'yaw', 'roll Kalman','pitch Kalman','yaw Kalman')
 grid minor
-title('Attitude computer vs Kalman filter. Euler angles. Architecture 2.')
+title('Attitude computer vs Kalman filter. Euler angles. Architecture 3.')
 legend('location','southeast')
 
 
@@ -266,5 +275,5 @@ xlabel('Time [s]')
 ylabel('Euler angles [deg]')
 legend('roll', 'pitch,', 'yaw', 'roll Kalman','pitch Kalman','yaw Kalman')
 grid minor
-title('Attitude computer vs Kalman filter. Euler angles. Architecture 2.')
+title('Attitude computer vs Kalman filter. Euler angles. Architecture 3.')
 legend('location','southeast')

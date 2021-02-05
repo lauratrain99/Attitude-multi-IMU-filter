@@ -1,17 +1,12 @@
-function [nav, imuMAINcomputed] = multiple_imu_filter(imu1, imu2, imu3, imu4)
+function [nav, imuCM] = imu2vimu_ekf(imu)
 %
 % multiple_imu_filter uses an Extended Kalman filter on four IMU measurements located at different
 % positions of the body for which the attitude is desired to be computed.
-% It corresponds to the design architecture number 1.
+% It corresponds to the design architecture number 2.
 % The four IMUs have the same error characterization
 % The IMU measurements include accelerometer, gyro and magnetometer data.
 % INPUT
-%          imu1, IMU located at position 1, different from the center of mass
-%          imu2, IMU located at position 2, different from the center of mass
-%          imu3, IMU located at position 3, different from the center of mass
-%          imu4, IMU located at position 4, different from the center of mass
-%
-%          The four data structures contain the following fields:
+%          imu1, IMU located at position N, different from the center of mass
 %             t: Nx1 time vector (seconds).
 %            fb: Nx3 accelerations vector in the imu body reference frame, XYZ coords (m/s^2)
 %            wb: Nx3 turn rates vector in the imu body reference frame, XYZ coords (radians/s)
@@ -63,17 +58,8 @@ O = zeros(3);
 
 % Compute the equivalent ang rates, acc and magnetic field at the center of
 % mass from each imu
-[imu1CM] = IMU_to_VIMU(imu1);
-[imu2CM] = IMU_to_VIMU(imu2);
-[imu3CM] = IMU_to_VIMU(imu3);
-[imu4CM] = IMU_to_VIMU(imu4);
+[imuCM] = IMU_to_VIMU(imu);
 
-% Fuse the four measurements
-[imuMAINcomputed] = sensor_fusion(imu1CM, imu2CM, imu3CM, imu4CM);
-
-% imu will be the structure containing the error characterization, which is
-% the same for the four imus
-imu = imu1;
 
 % Length of time vector
 N = length(imu.t);
@@ -132,8 +118,8 @@ mN = 0.22;
 mD = 0.17;
 g_n = [0; 0; ge];
 m_n = [mN; 0; mD];
-av = imuMAINcomputed.fv(1,:)';
-mv = imuMAINcomputed.mv(1,:)';
+av = imuCM.fv(1,:)';
+mv = imuCM.mv(1,:)';
 kf.deltar = [-DCMbn*av - g_n; DCMbn*mv - m_n];
 
 
@@ -141,7 +127,7 @@ kf.deltar = [-DCMbn*av - g_n; DCMbn*mv - m_n];
 kf.H = [skewm(g_n) O; skewm(m_n) O];
 
 % Correction covariance matrix, constant value over time
-kf.R = diag([imu.a_std'; imu.m_std']).^2;
+kf.R = diag([imu.DCMbv*imu.a_std'; imu.DCMbv*imu.m_std']).^2;
 
 % Initialization of the KF
 kf = kf_update( kf );
@@ -155,7 +141,7 @@ nav.Pi = reshape(kf.Pi, 1, 36);
 nav.deltaxp(1,:) = kf.deltaxp;
 nav.Pp(1,:) = reshape(kf.Pp, 1, 36);
 nav.deltar(1,:) = kf.deltar;
-nav.wv(1,:) = imuMAINcomputed.wv(1,:)' - gv_dyn;
+nav.wv(1,:) = imuCM.wv(1,:)' - gv_dyn;
 
 
 % Prediction covariance matrix, constant value over time
@@ -168,7 +154,7 @@ for i = 2:N
       dt = imu.t(i) - imu.t(i-1);
      
       % Correction for angular velocity with bias inestability
-      wv_corrected = imuMAINcomputed.wv(i,:)' - gv_dyn;
+      wv_corrected = imuCM.wv(i,:)' - gv_dyn;
      
       % Attitude update 3-2-1 body sequence
       [qua, DCMbn, euler] = my_quat_update(wv_corrected, qua, dt);
@@ -179,8 +165,8 @@ for i = 2:N
           kf.G = [-I O; O I];
           
           % CORRECTION
-          av = imuMAINcomputed.fv(i,:)';
-          mv = imuMAINcomputed.mv(i,:)';
+          av = imuCM.fv(i,:)';
+          mv = imuCM.mv(i,:)';
           kf.deltar = [-DCMbn*av - g_n; DCMbn*mv - m_n];
           
           % error reset
@@ -237,3 +223,5 @@ end
 
 
 end
+
+
