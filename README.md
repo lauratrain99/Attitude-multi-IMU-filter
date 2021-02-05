@@ -59,14 +59,14 @@ Once the kinematic transformations are verified, it is time to apply the data fi
 
 Possible design architectures:
 
-Version 1. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
+**Version 1**. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
     Perform the sensor fusion by averaging all the readings at the center
     of mass. Perform the EKF only once with those readings. Available in the path *synthetic-data/data-fusion/architecture-1*, the file *EKF_arch1.m* contains the main program.
 
-Version 2. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
+**Version 2**. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
     Perform the EKF four times, one for each of the CM readings. Average the readings at the center of mass. Available in the path *synthetic-data/data-fusion/architecture-2*, the file *EKF_arch2.m* contains the main program.
 
-Version 3. Perform the EKF four times, one for each of the IMU readings. Initialize the state vector as the angular error of the body at the center of mass and the bias of the corresponding IMU.
+**Version 3**. Perform the EKF four times, one for each of the IMU readings. Initialize the state vector as the angular error of the body at the center of mass and the bias of the corresponding IMU.
     The reference system change from the IMU body reference frame to the center of mass of the body is performed to compute the residual of the EKF at each step inside the EKF loop.
     Available in the path *synthetic-data/data-fusion/architecture-3*, the file *EKF_arch3.m* contains the main program.
 
