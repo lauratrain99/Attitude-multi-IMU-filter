@@ -10,7 +10,7 @@ function [imuMAIN] = IMU_to_VIMU(imuI)
 %         DCMbv: 3x3 DCM from IMU body reference frame to the VIMU reference frame  
 %           Rvb: 3x1 lever arm from the center of mass to the location of the IMU
 %                    in VIMU reference frame
-%            wb: Nx3 angular velocity in imuN body reference frame (radians)
+%            wb: Nx3 angular velocity in imuN body reference frame (radians/s)
 %            fb: Nx3 accelerations vector in imuN body reference frame (m/s^2)
 %            mb: Nx3 magnetic field vector in NED frame of the imuN body reference frame
 % OUTPUT
