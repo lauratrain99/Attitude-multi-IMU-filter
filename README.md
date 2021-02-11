@@ -77,19 +77,19 @@ Possible design architectures:
 
 
 Other relevant non-program functional files:
-    - *attitude_computer.m* at *synthetic-data/simulation*. This function allows to integrate angular velocity data to convert it into attitude represented in quaternions and Euler angles.
+- *attitude_computer.m* at *synthetic-data/simulation*. This function allows to integrate angular velocity data to convert it into attitude represented in quaternions and Euler angles.
 
-    - *IMU_simulator.m* avaiable at *synthetic-data/simulation*. This function allows to generate accelerometer and magnetometer data departing from angular velocity data.
+- *IMU_simulator.m* avaiable at *synthetic-data/simulation*. This function allows to generate accelerometer and magnetometer data departing from angular velocity data.
     
-    - *VIMU_to_IMU.m* available at *synthetic-data/simulation/imu2cm*. This function converts the an array of data for an IMU (VIMU) located at the center of mass of a body into the data for an IMU located at a different position.
+- *VIMU_to_IMU.m* available at *synthetic-data/simulation/imu2cm*. This function converts the an array of data for an IMU (VIMU) located at the center of mass of a body into the data for an IMU located at a different position.
     
-    - *IMU_to_VIMU.m* available at *synthetic-data/simulation/imu2cm*. This function converts the an array of data for an IMU located at a position of the body different from the center of mass to IMU (VIMU) located at the center of mass of the body
+- *IMU_to_VIMU.m* available at *synthetic-data/simulation/imu2cm*. This function converts the an array of data for an IMU located at a position of the body different from the center of mass to IMU (VIMU) located at the center of mass of the body
     
-    - *w_imu2cm.m* available at *synthetic-data/simulation/imu2cm*. This function converts the angular velocity one step data for an IMU located at a position of the body different from the center of mass to the angular velocity felt at the center of mass of the body
+- *w_imu2cm.m* available at *synthetic-data/simulation/imu2cm*. This function converts the angular velocity one step data for an IMU located at a position of the body different from the center of mass to the angular velocity felt at the center of mass of the body
     
-    - *acc_imu2cm.m* available at *synthetic-data/simulation/imu2cm*. This function converts the acceleration one step data for an IMU located at a position of the body different from the center of mass to the acceleration felt at the center of mass of the body
+- *acc_imu2cm.m* available at *synthetic-data/simulation/imu2cm*. This function converts the acceleration one step data for an IMU located at a position of the body different from the center of mass to the acceleration felt at the center of mass of the body
     
-    - *mag_imu2cm.m* available at *synthetic-data/simulation/imu2cm*. This function converts the magnetic field one step data for an IMU located at a position of the body different from the center of mass to the magnetic field felt at the center of mass of the body
+- *mag_imu2cm.m* available at *synthetic-data/simulation/imu2cm*. This function converts the magnetic field one step data for an IMU located at a position of the body different from the center of mass to the magnetic field felt at the center of mass of the body
 
 Checklist:
 
