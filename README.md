@@ -1,5 +1,5 @@
 # Attitude-multi-IMU-filter
-Date of the last update Feb 05 2021.
+Date of the last update Feb 11 2021.
 
 This repo contains the code development for the data fusion algorithm of a multi-IMU configuration to estimate attitude using an Extended Kalman filter.
 
