@@ -1,47 +1,25 @@
 %% MULTIPLE IMU EKF 
 % Author: Laura Train
-% Date of the last update Jan 29 2021
+% Date of the last update Feb 11 2021
 %
 % The goal of this script is to implement the EKF with the multi-IMU
 % configuration to estimate attitude generating synthetic data for a known
-% simple motion. This program has to be implemented after the test in
-% multiple_imu is passed.
+% simple motion. 
 %
-% Possible design architectures:
-% 1. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
-%    Perform the sensor fusion by averaging all the readings at the center
-%    of mass. Perform the EKF only once with those readings.
-% 2. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
+% SECOND DESIGN ARCHITECTURE:
+%    Convert the data from each IMU beforehand to generate one CM (center of mass) data per IMU.
 %    Perform the EKF four times, one for each of the CM readings.
 %
-% (To be continued with other alternatives)
-%
-% Checklist:
-% DONE:
-%          1. Obtain the data readings for each IMU.
-%           
-%          2. Include error characterization and consequent noise in the
-%             IMU readings.
-%
-%          3. Build the first design architecture. Steps:
-%               - Convert the data from each IMU to generate angular
-%               velocity, accelerations and local magnetic field at the
-%               center of mass.
-%               - Perform the sensor fusion to obtain an average for the
-%               angular velocity, acceleration and local magnetic field at
-%               the center of mass.
-%               - Apply the EKF to the averaged values.
-%
-%          4. Build the second design achitecture. Steps:
+% Steps:
 %               - Convert the data from each IMU to generate angular
 %               velocity, accelerations and local magnetic field at the
 %               center of mass.
 %               - Apply the EKF to the each CM readings. Four EKFs in total
 
-%% Use NaveGo functions
+%% Include paths
 matlabrc
 
-addpath ../../simulation
+addpath ../../simulation/imu2cm
 addpath ../../../ins/
 addpath ../../../conversions/
 addpath ../../../kalman/
