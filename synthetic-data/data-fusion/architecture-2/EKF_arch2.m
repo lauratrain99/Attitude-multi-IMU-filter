@@ -221,10 +221,10 @@ imu4.m_std = [0.005, 0.005, 0.005];
 
 %% SENSOR FUSION - EXTENDED KALMAN FILTER
 % Attitude EKF for each sensor
-[nav1, imuCM1] = imu2vimu_ekf(imu1);
-[nav2, imuCM2] = imu2vimu_ekf(imu2);
-[nav3, imuCM3] = imu2vimu_ekf(imu3);
-[nav4, imuCM4] = imu2vimu_ekf(imu4);
+[nav1, imuCM1] = arch2_imu2cm_filter(imu1);
+[nav2, imuCM2] = arch2_imu2cm_filter(imu2);
+[nav3, imuCM3] = arch2_imu2cm_filter(imu3);
+[nav4, imuCM4] = arch2_imu2cm_filter(imu4);
 
 % Fusion of the four measurements
 [navCM] = attitude_average(nav1, nav2, nav3, nav4);

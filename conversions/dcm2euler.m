@@ -10,10 +10,10 @@ function euler = dcm2euler(DCMbn)
 %%
 
 
-roll   =  atan( DCMbn(3,2) / DCMbn(3,3) ); % roll
+roll   =  atan2( DCMbn(3,2) / DCMbn(3,3) ); % roll
 pitch = -asin( DCMbn(3,1) );                % pitch
 yaw   =  atan2( DCMbn(2,1), DCMbn(1,1) );  % yaw
 
-euler = [roll; pitch; yaw];
+euler = [roll pitch yaw];
 
 end
