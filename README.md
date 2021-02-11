@@ -77,6 +77,8 @@ Possible design architectures:
 
 
 Other relevant non-program functional files:
+    - *attitude_computer.m* at *synthetic-data/simulation*. This function allows to integrate angular velocity data to convert it into attitude represented in quaternions and Euler angles.
+
     - *IMU_simulator.m* avaiable at *synthetic-data/simulation*. This function allows to generate accelerometer and magnetometer data departing from angular velocity data.
     
     - *VIMU_to_IMU.m* available at *synthetic-data/simulation/imu2cm*. This function converts the an array of data for an IMU (VIMU) located at the center of mass of a body into the data for an IMU located at a different position.
