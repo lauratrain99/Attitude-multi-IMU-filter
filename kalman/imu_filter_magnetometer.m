@@ -1,7 +1,7 @@
 function [nav] = imu_filter_magnetometer(imu)
 %
 % imu_filter_magnetometer filters IMU measurements by using an Extended Kalman filter.
-% The IMU measurements include accelerometer, gyro and magnetometer data.
+% The IMU measurements include 9 DOF from accelerometer, gyro and magnetometer data.
 % INPUT
 %           imu, IMU data structure.
 %             t: Nx1 time vector (seconds).

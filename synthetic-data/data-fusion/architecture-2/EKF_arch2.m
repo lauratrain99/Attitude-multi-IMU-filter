@@ -1,47 +1,25 @@
 %% MULTIPLE IMU EKF 
 % Author: Laura Train
-% Date of the last update Jan 29 2021
+% Date of the last update Feb 11 2021
 %
 % The goal of this script is to implement the EKF with the multi-IMU
 % configuration to estimate attitude generating synthetic data for a known
-% simple motion. This program has to be implemented after the test in
-% multiple_imu is passed.
+% simple motion. 
 %
-% Possible design architectures:
-% 1. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
-%    Perform the sensor fusion by averaging all the readings at the center
-%    of mass. Perform the EKF only once with those readings.
-% 2. Convert the data from each IMU to generate one CM (center of mass) data per IMU.
+% SECOND DESIGN ARCHITECTURE:
+%    Convert the data from each IMU beforehand to generate one CM (center of mass) data per IMU.
 %    Perform the EKF four times, one for each of the CM readings.
 %
-% (To be continued with other alternatives)
-%
-% Checklist:
-% DONE:
-%          1. Obtain the data readings for each IMU.
-%           
-%          2. Include error characterization and consequent noise in the
-%             IMU readings.
-%
-%          3. Build the first design architecture. Steps:
-%               - Convert the data from each IMU to generate angular
-%               velocity, accelerations and local magnetic field at the
-%               center of mass.
-%               - Perform the sensor fusion to obtain an average for the
-%               angular velocity, acceleration and local magnetic field at
-%               the center of mass.
-%               - Apply the EKF to the averaged values.
-%
-%          4. Build the second design achitecture. Steps:
+% Steps:
 %               - Convert the data from each IMU to generate angular
 %               velocity, accelerations and local magnetic field at the
 %               center of mass.
 %               - Apply the EKF to the each CM readings. Four EKFs in total
 
-%% Use NaveGo functions
+%% Include paths
 matlabrc
 
-addpath ../../simulation
+addpath ../../simulation/imu2cm
 addpath ../../../ins/
 addpath ../../../conversions/
 addpath ../../../kalman/
@@ -221,10 +199,10 @@ imu4.m_std = [0.005, 0.005, 0.005];
 
 %% SENSOR FUSION - EXTENDED KALMAN FILTER
 % Attitude EKF for each sensor
-[nav1, imuCM1] = imu2vimu_ekf(imu1);
-[nav2, imuCM2] = imu2vimu_ekf(imu2);
-[nav3, imuCM3] = imu2vimu_ekf(imu3);
-[nav4, imuCM4] = imu2vimu_ekf(imu4);
+[nav1, imuCM1] = arch2_imu2cm_filter(imu1);
+[nav2, imuCM2] = arch2_imu2cm_filter(imu2);
+[nav3, imuCM3] = arch2_imu2cm_filter(imu3);
+[nav4, imuCM4] = arch2_imu2cm_filter(imu4);
 
 % Fusion of the four measurements
 [navCM] = attitude_average(nav1, nav2, nav3, nav4);

@@ -1,4 +1,4 @@
-function [nav, imuCM] = imu2vimu_ekf(imu)
+function [nav, imuCM] = arch2_imu2cm_filter(imu)
 %
 % multiple_imu_filter uses an Extended Kalman filter on four IMU measurements located at different
 % positions of the body for which the attitude is desired to be computed.

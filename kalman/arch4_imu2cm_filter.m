@@ -110,12 +110,15 @@ euler4 = [roll4, pitch4, yaw4];
 nav.roll1(1)  = imu1.ini_align(1);
 nav.pitch1(1) = imu1.ini_align(2);
 nav.yaw1(1)   = imu1.ini_align(3);
+
 nav.roll2(1)  = imu2.ini_align(1);
 nav.pitch2(1) = imu2.ini_align(2);
 nav.yaw2(1)   = imu2.ini_align(3);
+
 nav.roll3(1)  = imu3.ini_align(1);
 nav.pitch3(1) = imu3.ini_align(2);
 nav.yaw3(1)   = imu3.ini_align(3);
+
 nav.roll4(1)  = imu4.ini_align(1);
 nav.pitch4(1) = imu4.ini_align(2);
 nav.yaw4(1)   = imu4.ini_align(3);
@@ -183,10 +186,12 @@ wv_1 = w_imu2cm(imu1.DCMbv, imu1.wb(1,:)');
 wv_2 = w_imu2cm(imu2.DCMbv, imu2.wb(1,:)');
 wv_3 = w_imu2cm(imu3.DCMbv, imu3.wb(1,:)');
 wv_4 = w_imu2cm(imu4.DCMbv, imu4.wb(1,:)');
+
 av_1 = acc_imu2cm(imu1.fb(1,:)', imu1.DCMbv, imu1.Rvb, wv_1, wv_1, 0);
 av_2 = acc_imu2cm(imu2.fb(1,:)', imu2.DCMbv, imu2.Rvb, wv_2, wv_2, 0);
 av_3 = acc_imu2cm(imu3.fb(1,:)', imu3.DCMbv, imu3.Rvb, wv_3, wv_3, 0);
 av_4 = acc_imu2cm(imu4.fb(1,:)', imu4.DCMbv, imu4.Rvb, wv_4, wv_4, 0);
+
 mv_1 = mag_imu2cm(imu1.DCMbv, imu1.mb(1,:)');
 mv_2 = mag_imu2cm(imu2.DCMbv, imu2.mb(1,:)');
 mv_3 = mag_imu2cm(imu3.DCMbv, imu3.mb(1,:)');
@@ -246,10 +251,15 @@ for i = 2:N
       wv_corrected_4 = w_imu2cm(imu4.DCMbv, imu4.wb(i,:)' - gb_dyn_4);
       
       % Attitude update 3-2-1 body sequence
-      [qua1, DCMbn1, ~] = my_quat_update(wv_corrected_1, qua1, dt);
-      [qua2, DCMbn2, ~] = my_quat_update(wv_corrected_2, qua2, dt);
-      [qua3, DCMbn3, ~] = my_quat_update(wv_corrected_3, qua3, dt);
-      [qua4, DCMbn4, ~] = my_quat_update(wv_corrected_4, qua4, dt);
+      qua1_prev = qua1;
+      qua2_prev = qua2;
+      qua3_prev = qua3;
+      qua4_prev = qua4;
+      
+      [qua1, DCMbn1, ~] = my_quat_update(wv_corrected_1, qua1_prev, dt);
+      [qua2, DCMbn2, ~] = my_quat_update(wv_corrected_2, qua2_prev, dt);
+      [qua3, DCMbn3, ~] = my_quat_update(wv_corrected_3, qua3_prev, dt);
+      [qua4, DCMbn4, ~] = my_quat_update(wv_corrected_4, qua4_prev, dt);
       
       % KALMAN FILTER      
           % PREDICTION         
@@ -279,10 +289,12 @@ for i = 2:N
           wv_2 = w_imu2cm(imu2.DCMbv, imu2.wb(i,:)');
           wv_3 = w_imu2cm(imu3.DCMbv, imu3.wb(i,:)');
           wv_4 = w_imu2cm(imu4.DCMbv, imu4.wb(i,:)');
+          
           av_1 = acc_imu2cm(imu1.fb(i,:)', imu1.DCMbv, imu1.Rvb, wv_1, wv_prev, 0);
           av_2 = acc_imu2cm(imu2.fb(i,:)', imu2.DCMbv, imu2.Rvb, wv_2, wv_prev, 0);
           av_3 = acc_imu2cm(imu3.fb(i,:)', imu3.DCMbv, imu3.Rvb, wv_3, wv_prev, 0);
           av_4 = acc_imu2cm(imu4.fb(i,:)', imu4.DCMbv, imu4.Rvb, wv_4, wv_prev, 0);
+          
           mv_1 = mag_imu2cm(imu1.DCMbv, imu1.mb(i,:)');
           mv_2 = mag_imu2cm(imu2.DCMbv, imu2.mb(i,:)');
           mv_3 = mag_imu2cm(imu3.DCMbv, imu3.mb(i,:)');
@@ -295,7 +307,8 @@ for i = 2:N
           kf.deltar(19:24) = [-DCMbn4*av_4 - g_n; DCMbn4*mv_4 - m_n]';
           
           % Execution of the Extended Kalman filter
-          kf.deltaxp = zeros(length(kf.deltaxp),1);           % states 1:3 are forced to be zero (error-state approach)
+          % RESET
+          kf.deltaxp = zeros(length(kf.deltaxp),1);           
           kf = kalman(kf, dt);
          
           % OBSERVABILITY
@@ -304,23 +317,10 @@ for i = 2:N
          
           % ADD THE ERROR TO THE STATE
           % Quaternion corrections
-          % Crassidis. Eq. 7.34 and A.174a.
-          antm = [0 qua1(3) -qua1(2); -qua1(3) 0 qua1(1); qua1(2) -qua1(1) 0];
-          qua1 = qua1 + 0.5 .* [qua1(4)*eye(3) + antm; -1.*[qua1(1) qua1(2) qua1(3)]] * kf.deltaxp(1:3);
-          qua1 = qua1 / norm(qua1);       % Brute-force normalization
-          
-          antm = [0 qua2(3) -qua2(2); -qua2(3) 0 qua2(1); qua2(2) -qua2(1) 0];
-          qua2 = qua2 + 0.5 .* [qua2(4)*eye(3) + antm; -1.*[qua2(1) qua2(2) qua2(3)]] * kf.deltaxp(7:9);
-          qua2 = qua2 / norm(qua2);       % Brute-force normalization
-          
-          antm = [0 qua3(3) -qua3(2); -qua3(3) 0 qua3(1); qua3(2) -qua3(1) 0];
-          qua3 = qua3 + 0.5 .* [qua3(4)*eye(3) + antm; -1.*[qua3(1) qua3(2) qua3(3)]] * kf.deltaxp(13:15);
-          qua3 = qua3 / norm(qua3);       % Brute-force normalization
-          
-          antm = [0 qua4(3) -qua4(2); -qua4(3) 0 qua4(1); qua4(2) -qua4(1) 0];
-          qua4 = qua4 + 0.5 .* [qua4(4)*eye(3) + antm; -1.*[qua4(1) qua4(2) qua4(3)]] * kf.deltaxp(19:21);
-          qua4 = qua4 / norm(qua4);       % Brute-force normalization
-
+          [qua1] = error_correction(kf.deltaxp(1:3), qua1);
+          [qua2] = error_correction(kf.deltaxp(7:9), qua2);
+          [qua3] = error_correction(kf.deltaxp(13:15), qua3);
+          [qua4] = error_correction(kf.deltaxp(19:21), qua4);
 
           
           % DCM correction
@@ -359,7 +359,7 @@ for i = 2:N
 
          
           % Store Kalman filter outputs
-          nav.t(i)              = imu1.t(i); 
+          nav.t(i)               = imu1.t(i); 
           nav.roll1(i)           = rad2deg(roll1);   
           nav.pitch1(i)          = rad2deg(pitch1);    
           nav.yaw1(i)            = rad2deg(yaw1);
@@ -380,19 +380,19 @@ for i = 2:N
           nav.DCMbn2(i,:)        = reshape(DCMbn2, 1, 9);
           nav.DCMbn3(i,:)        = reshape(DCMbn3, 1, 9);
           nav.DCMbn4(i,:)        = reshape(DCMbn4, 1, 9);
-          nav.deltaxi(i,:)      = kf.deltaxi';
-          nav.deltaxp(i,:)      = kf.deltaxp';
-          nav.Phi(i,:)          = reshape(kf.Phi, 1, 576);
-          nav.Pi(i,:)           = reshape(kf.Pi, 1, 576);
-          nav.Pp(i,:)           = reshape(kf.Pp, 1, 576);
-          nav.K(i,:)            = reshape(kf.K, 1, 576);
-          nav.S(i,:)            = reshape(kf.S, 1, 576);
-          nav.ob(i,:)           = ob;
-          nav.deltar(i,:)       = kf.deltar;
-          nav.wv_1(i,:)           = wv_corrected_1;
-          nav.wv_2(i,:)           = wv_corrected_2;
-          nav.wv_3(i,:)           = wv_corrected_3;
-          nav.wv_4(i,:)           = wv_corrected_4;
+          nav.deltaxi(i,:)       = kf.deltaxi';
+          nav.deltaxp(i,:)       = kf.deltaxp';
+          nav.Phi(i,:)           = reshape(kf.Phi, 1, 576);
+          nav.Pi(i,:)            = reshape(kf.Pi, 1, 576);
+          nav.Pp(i,:)            = reshape(kf.Pp, 1, 576);
+          nav.K(i,:)             = reshape(kf.K, 1, 576);
+          nav.S(i,:)             = reshape(kf.S, 1, 576);
+          nav.ob(i,:)            = ob;
+          nav.deltar(i,:)        = kf.deltar;
+          nav.wv_1(i,:)          = wv_corrected_1;
+          nav.wv_2(i,:)          = wv_corrected_2;
+          nav.wv_3(i,:)          = wv_corrected_3;
+          nav.wv_4(i,:)          = wv_corrected_4;
 
 end
 
