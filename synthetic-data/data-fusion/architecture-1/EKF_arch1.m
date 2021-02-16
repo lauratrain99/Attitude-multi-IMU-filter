@@ -24,9 +24,10 @@
 matlabrc
 
 addpath ../../simulation/imu2cm
-addpath ../../ins/
-addpath ../../conversions/
-addpath ../../kalman/
+addpath ../../simulation/
+addpath ../../../ins/
+addpath ../../../conversions/
+addpath ../../../kalman/
 
 t = 0:1/100:10;
 
