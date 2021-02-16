@@ -20,6 +20,7 @@
 matlabrc
 
 addpath ../../simulation/imu2cm
+addpath ../../simulation/
 addpath ../../../ins/
 addpath ../../../conversions/
 addpath ../../../kalman/
