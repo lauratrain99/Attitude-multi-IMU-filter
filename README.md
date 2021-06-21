@@ -1,7 +1,7 @@
 # Attitude-multi-IMU-filter
-Date of the last update Feb 11 2021
+Date of the last update Jun 21 2021
 
-This repo contains the code development for the data fusion algorithm of a multi-IMU configuration to estimate attitude using an Extended Kalman filter.
+This repo contains the code development for the data fusion algorithm of a multi-IMU configuration to estimate attitude using an Extended Kalman filter. It also has the needed files to read and process the sensors data.
 
 The body whose attitude is to be analyzed, contains four IMUs located at each corner so in order to obtain an accurate estimation on the motion of the body, it is necessary to convert the readings obtained from each IMU into the center of mass motion, which is motion of interest.
 
@@ -76,7 +76,7 @@ Possible design architectures:
  (To be continued with other alternatives)
 
 
-Other relevant non-program functional files:
+Other relevant functional files:
 - *attitude_computer.m* at *synthetic-data/simulation*. This function allows to integrate angular velocity data to convert it into attitude represented in quaternions and Euler angles.
 
 - *IMU_simulator.m* avaiable at *synthetic-data/simulation*. This function allows to generate accelerometer and magnetometer data departing from angular velocity data.
@@ -90,6 +90,7 @@ Other relevant non-program functional files:
 - *acc_imu2cm.m* available at *synthetic-data/simulation/imu2cm*. This function converts the acceleration one step data for an IMU located at a position of the body different from the center of mass to the acceleration felt at the center of mass of the body
     
 - *mag_imu2cm.m* available at *synthetic-data/simulation/imu2cm*. This function converts the magnetic field one step data for an IMU located at a position of the body different from the center of mass to the magnetic field felt at the center of mass of the body
+
 
 Checklist:
 
@@ -137,8 +138,19 @@ Checklist:
 
                - Only one EKF giving an output of the attitude of the center of mass computed from each IMU.
 
+	  7. Design a program to evaluate the performance of the different algorithm alternatives. Establish conditions to choose one model or other.
 
 
-TO BE DONE:
+ For the data acquisition, do the following:
 
-          7. Design a program to evaluate the performance of the different algorithm alternatives. Establish conditions to choose one model or other.
+	1. Connect the IMU device to the COM port via USB.
+
+	2. Go to STM32 Cube IDE and run *data-acquire/data-reading/Core/Src/main.c*. Check it compiles and 0 errors are displayed.
+
+	3. Open Spatial Manager application, choose the Serial port and the baud rate, click on Connect. In the Communications display, a green light should pop up saying Connected.
+	
+	4. Data is being read and process in packets. The file with the information has the extension *.anpp*, which includes the date and time of the data acquisition. It can be seen at *data-acquire/data-processing/spatial-manager/files*.
+
+	5. To translate this file into a readable and post-processable file *.csv* go to *data-acquire/data-processing/spatial-manager/spatial_parser_file_VerBETA.py*. Open it up in a python environment like spyder, scroll down and after the *if __name__ == "__main__":* call, the object *SpatManag_parser* is instanced. Introduce the name of your *.anpp* file as the first argument. Introduce the name of your *.csv* output file as the second argument. Run the script and check no errors are displayed in the terminal window.
+
+	6. The *.csv* files are stored at *data-acquire/data-processing/spatial-manager/post-processing* folder. To plot their content, go to 

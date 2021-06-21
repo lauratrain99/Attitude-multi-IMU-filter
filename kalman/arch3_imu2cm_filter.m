@@ -104,7 +104,7 @@ nav.wv = zeros(N, 3);           % Corrected angular velocity
 kf.deltaxi = [zeros(1,3), imu.gb_dyn]';            % Error vector state
 kf.Pi = diag([imu.ini_align_err, imu.gb_dyn].^2);
 
-ge = 9.81;
+ge = -9.81;
 mN = 0.22;
 mD = 0.17;
 g_n = [0; 0; ge];

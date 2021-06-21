@@ -56,7 +56,7 @@ O = zeros(3);
 
 % Length of time vector
 
-N = length(imu1.t);
+N = min([length(imu1.t), length(imu2.t), length(imu3.t), length(imu4.t)]);
 
 
 % Preallocation of attitude vectors
@@ -176,7 +176,7 @@ nav.wv = zeros(N, 3);           % Corrected angular velocity
 kf.deltaxi = [zeros(1,3), imu1.gb_dyn, zeros(1,3), imu2.gb_dyn, zeros(1,3), imu3.gb_dyn, zeros(1,3), imu4.gb_dyn]';            % Error vector state
 kf.Pi = diag([imu1.ini_align_err, imu1.gb_dyn, imu2.ini_align_err, imu2.gb_dyn, imu3.ini_align_err, imu3.gb_dyn, imu4.ini_align_err, imu4.gb_dyn].^2);
 
-ge = 9.81;
+ge = -9.81;
 mN = 0.22;
 mD = 0.17;
 g_n = [0; 0; ge];

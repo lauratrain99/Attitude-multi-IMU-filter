@@ -46,4 +46,30 @@ codegen/
 # Octave session info
 octave-workspace
 
-synthetic-data/simulation/imu2cm.m
+# Spatial manager executable file
+*.jar
+
+# stm32 extensions
+*.launch
+*.ioc
+*.mk
+*.map
+*.list
+*.bin
+*.elf
+*.su
+*.o
+*.d
+*.xml
+*.ld
+data-acquire/data-reading/Debug/makefile
+*.prefs
+*.png
+data-acquire/data-processing/post-processing/files/tuesdaynight.csv
+data-acquire/data-processing/post-processing/files/monday.csv
+data-acquire/data-processing/post-processing/files/sunday.csv
+data-acquire/data-processing/spatial-manager/files/SpatialLog_21-04-14_00-31-05.anpp
+data-acquire/data-processing/post-processing/files/night_multi.csv
+*.anpp
+*.csv
+*.cfg

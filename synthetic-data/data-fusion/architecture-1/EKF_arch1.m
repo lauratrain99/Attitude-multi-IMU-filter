@@ -46,9 +46,9 @@ imuMAIN.ini_align = [0, 0, 0];
 
 % Generate synthetic motion by defining angular velocities
 w = 4*pi/10;
-imuMAIN.wv(:,1) = w*ones(N,1);
+imuMAIN.wv(:,1) = zeros(N,1);
 imuMAIN.wv(:,2) = zeros(N, 1);
-imuMAIN.wv(:,3) = zeros(N,1);
+imuMAIN.wv(:,3) = w*ones(N,1);
 
 % Generate synthetic motion for the acceleration and magnetic field.
 [imuMAIN] = IMU_simulator(imuMAIN);
@@ -204,7 +204,7 @@ imu4.m_std = [0.005, 0.005, 0.005];
 
 %% SENSOR FUSION - EXTENDED KALMAN FILTER
 % Attitude EKF
-[navimu1MAINcomputed , imu1MAINcomputed] = multiple_imu_filter(imu1, imu2, imu3, imu4);
+[navimu1MAINcomputed , kfMAINcomputed] = arch1_imu2cm_filter_nomag(imu1, imu2, imu3, imu4);
 
 %% PLOT RESULTS
 % Compute attitude only using angular velocity data
@@ -213,25 +213,102 @@ imuMAIN.ini_align = [0, 0, 0];
 euler = rad2deg(euler);
 
 
-% Plot comparison between true attitude vs EKF output
-figure(1)
-plot(navimu1MAINcomputed.t, quat(:,1), 'r', navimu1MAINcomputed.t, quat(:,2), 'c', navimu1MAINcomputed.t, quat(:,3), 'g', navimu1MAINcomputed.t, quat(:,4), 'k', ...
-     navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,1), 'or', navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,2), 'oc', navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,3), 'og', navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,4), 'ok')
-xlabel('Time [s]')
-ylabel('quaternions')
-legend('q1', 'q2,', 'q3', 'q4', 'q1 Kalman','q2 Kalman','q3 Kalman', 'q4 Kalman')
+
+fh = figure(1);
+% fh.WindowState = 'maximized';
+
+sgtitle('Quaternions. Architecture 1.','interpreter','latex')
+
+subplot(4,1,1)
+plot(navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,1), 'og')
+hold on
+plot(navimu1MAINcomputed.t, quat(:,1), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('q1','interpreter','latex')
 grid minor
-title('Attitude computer vs Kalman filter. Quaternions. Architecture 1.')
-legend('location','southeast')
+legend('q1 KF','q1 th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
 
-
-figure(2)
-plot(navimu1MAINcomputed.t, euler(:,1), 'r', navimu1MAINcomputed.t, euler(:,2), 'c', navimu1MAINcomputed.t, euler(:,3), 'g', ...
-     navimu1MAINcomputed.t, navimu1MAINcomputed.roll, 'or', navimu1MAINcomputed.t, navimu1MAINcomputed.pitch, 'oc', navimu1MAINcomputed.t, navimu1MAINcomputed.yaw, 'og')
-xlabel('Time [s]')
-ylabel('Euler angles [deg]')
-legend('roll', 'pitch,', 'yaw', 'roll Kalman','pitch Kalman','yaw Kalman')
+subplot(4,1,2)
+plot(navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,2), 'og')
+hold on
+plot(navimu1MAINcomputed.t, quat(:,2), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('q2','interpreter','latex')
 grid minor
-title('Attitude computer vs Kalman filter. Euler angles. Architecture 1.')
-legend('location','southeast')
+legend('q2 KF', 'q2 th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
 
+subplot(4,1,3)
+plot(navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,3), 'og')
+hold on
+plot(navimu1MAINcomputed.t, quat(:,3), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('q3','interpreter','latex')
+grid minor
+legend('q3 KF','q3 th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
+
+
+subplot(4,1,4)
+plot(navimu1MAINcomputed.t, navimu1MAINcomputed.qua(:,4), 'og')
+hold on
+plot(navimu1MAINcomputed.t, quat(:,4), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('q4','interpreter','latex')
+grid minor
+legend('q4 KF','q4 th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
+
+% saveas(fh, 'quaternions_wy.png')
+
+
+fh = figure(2);
+% fh.WindowState = 'maximized';
+sgtitle('Euler angles. Architecture 1.','interpreter','latex')
+
+subplot(3,1,1)
+plot(navimu1MAINcomputed.t, navimu1MAINcomputed.roll, 'og')
+hold on
+plot(navimu1MAINcomputed.t, euler(:,1), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('roll [deg]','interpreter','latex')
+grid minor
+legend('roll KF','roll th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
+
+subplot(3,1,2)
+plot(navimu1MAINcomputed.t, navimu1MAINcomputed.pitch, 'og')
+hold on
+plot(navimu1MAINcomputed.t, euler(:,2), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('pitch [deg]','interpreter','latex')
+grid minor
+legend('pitch KF','pitch th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
+
+subplot(3,1,3)
+plot(navimu1MAINcomputed.t, navimu1MAINcomputed.yaw, 'og')
+hold on
+plot(navimu1MAINcomputed.t, euler(:,3), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('yaw [deg]','interpreter','latex')
+grid minor
+legend('yaw KF','yaw th','interpreter','latex')
+legend('location','westoutside')
+
+
+% saveas(fh, 'eulerangles_wy.png')

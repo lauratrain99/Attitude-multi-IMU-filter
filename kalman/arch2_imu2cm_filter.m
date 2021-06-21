@@ -113,7 +113,7 @@ kf.deltaxi = [zeros(1,3), gv_dyn']';
 kf.Pi = diag([imu.DCMbv*imu.ini_align_err'; gv_dyn].^2);
 
 % Compute the initial state
-ge = 9.81;
+ge = -9.81;
 mN = 0.22;
 mD = 0.17;
 g_n = [0; 0; ge];

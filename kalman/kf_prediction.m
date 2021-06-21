@@ -24,7 +24,9 @@ function  kf = kf_prediction(kf, dt)
     
     kf.Qd = (kf.G * kf.Q * kf.G') .* dt; 
     kf.Pi = kf.Phi * kf.Pp * kf.Phi' + kf.Qd;
-    kf.Pi =  0.5 .* (kf.Pi + kf.Pi');               % Force Pi to be symmetric matrix
+    
+    % Force Pi to be symmetric matrix
+    kf.Pi =  0.5 .* (kf.Pi + kf.Pi');               
 
 
 end

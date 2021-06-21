@@ -42,9 +42,9 @@ imuMAIN.ini_align = [0, 0, 0];
 
 % Generate synthetic motion by defining angular velocities
 w = 4*pi/10;
-imuMAIN.wv(:,1) = w*ones(N,1);
-imuMAIN.wv(:,2) = zeros(N, 1);
-imuMAIN.wv(:,3) = zeros(N,1);
+imuMAIN.wv(:,1) = zeros(N,1);
+imuMAIN.wv(:,2) = w*ones(N,1);
+imuMAIN.wv(:,3) = zeros(N, 1);
 
 % Generate synthetic motion for the acceleration and magnetic field.
 [imuMAIN] = IMU_simulator(imuMAIN);
@@ -53,6 +53,7 @@ imuMAIN.wv(:,3) = zeros(N,1);
 %% GENERATE DATA FOR IMU NUMBER 1
 % imu1, imu located at a point different from the center of mass
 % imu1MAINcomputed, the data for the center of mass obtained from the IMU1
+
 
 % length from the center of mass to the IMU1
 L = 0.02;
@@ -99,9 +100,12 @@ L = 0.02;
 % relative orientation of the IMU1 with respect to the center of mass of
 % the body
 imu2.ini_align = [0, 0, 0];
+
 imu2.roll0 = 0;
 imu2.pitch0 = 120;
 imu2.yaw0 = 45;
+
+
 
 % DCM from IMU2 body reference frame to the VIMU ref frame
 imu2.DCMvb =  euler2dcm(deg2rad([imu2.roll0, imu2.pitch0, imu2.yaw0]));
@@ -138,9 +142,12 @@ L = 0.02;
 % relative orientation of the IMU3 with respect to the center of mass of
 % the body
 imu3.ini_align = [0, 0, 0];
+
 imu3.roll0 = 0;
 imu3.pitch0 = 120;
 imu3.yaw0 = 180;
+
+
 
 
 % DCM from IMU3 body reference frame to the VIMU ref frame
@@ -173,9 +180,12 @@ L = 0.02;
 % relative orientation of the IMU4 with respect to the center of mass of
 % the body
 imu4.ini_align = [0, 0, 0];
+
 imu4.roll0 = 0;
 imu4.pitch0 = 120;
 imu4.yaw0 = -45;
+
+
 
 
 % DCM from IMU4 body reference frame to the VIMU ref frame
@@ -198,7 +208,9 @@ imu4.g_std = [0.01, 0.01, 0.01];
 imu4.m_std = [0.005, 0.005, 0.005];
 
 %% DATA FUSION
-[navCM] = arch4_imu2cm_filter(imu1, imu2, imu3, imu4);
+[navCM_individual] = arch4_imu2cm_filter(imu1, imu2, imu3, imu4);
+
+navCM =  attitude_average_arch4(navCM_individual);
 
 %% PLOT RESULTS
 % Compute attitude only using angular velocity data
@@ -207,90 +219,100 @@ imuMAIN.ini_align = [0, 0, 0];
 euler = rad2deg(euler);
 
 
-% Plot comparison between true attitude vs EKF output
-figure(1)
-plot(navCM.t, quat(:,1), 'r', navCM.t, quat(:,2), 'c', navCM.t, quat(:,3), 'g', navCM.t, quat(:,4), 'k', ...
-     navCM.t, navCM.qua1(:,1), 'or', navCM.t, navCM.qua1(:,2), 'oc', navCM.t, navCM.qua1(:,3), 'og', navCM.t, navCM.qua1(:,4), 'ok')
-xlabel('Time [s]')
-ylabel('quaternions')
-legend('q1', 'q2,', 'q3', 'q4', 'q1 Kalman','q2 Kalman','q3 Kalman', 'q4 Kalman')
+fh = figure(1);
+% fh.WindowState = 'maximized';
+
+sgtitle('Quaternions. Architecture 4.','interpreter','latex')
+
+subplot(4,1,1)
+plot(navCM.t, navCM.qua(:,1), 'or')
+hold on
+plot(navCM.t, quat(:,1), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('q1','interpreter','latex')
 grid minor
-title('Attitude computer vs Kalman filter. Quaternions. IMU 1.')
-legend('location','southeast')
+legend('q1 KF','q1 th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
 
-
-figure(2)
-plot(navCM.t, euler(:,1), 'r', navCM.t, euler(:,2), 'c', navCM.t, euler(:,3), 'g', ...
-     navCM.t, navCM.roll1, 'or', navCM.t, navCM.pitch1, 'oc', navCM.t, navCM.yaw1, 'og')
-xlabel('Time [s]')
-ylabel('Euler angles [deg]')
-legend('roll', 'pitch,', 'yaw', 'roll Kalman','pitch Kalman','yaw Kalman')
+subplot(4,1,2)
+plot(navCM.t, navCM.qua(:,2), 'or')
+hold on
+plot(navCM.t, quat(:,2), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('q2','interpreter','latex')
 grid minor
-title('Attitude computer vs Kalman filter. Euler angles. IMU 1.')
-legend('location','southeast')
+legend('q2 KF', 'q2 th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
 
-
-figure(3)
-plot(navCM.t, quat(:,1), 'r', navCM.t, quat(:,2), 'c', navCM.t, quat(:,3), 'g', navCM.t, quat(:,4), 'k', ...
-     navCM.t, navCM.qua2(:,1), 'or', navCM.t, navCM.qua2(:,2), 'oc', navCM.t, navCM.qua2(:,3), 'og', navCM.t, navCM.qua1(:,4), 'ok')
-xlabel('Time [s]')
-ylabel('quaternions')
-legend('q1', 'q2,', 'q3', 'q4', 'q1 Kalman','q2 Kalman','q3 Kalman', 'q4 Kalman')
+subplot(4,1,3)
+plot(navCM.t, navCM.qua(:,3), 'or')
+hold on
+plot(navCM.t, quat(:,3), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('q3','interpreter','latex')
 grid minor
-title('Attitude computer vs Kalman filter. Quaternions. IMU 2.')
-legend('location','southeast')
+legend('q3 KF','q3 th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
 
-
-figure(4)
-plot(navCM.t, euler(:,1), 'r', navCM.t, euler(:,2), 'c', navCM.t, euler(:,3), 'g', ...
-     navCM.t, navCM.roll2, 'or', navCM.t, navCM.pitch2, 'oc', navCM.t, navCM.yaw2, 'og')
-xlabel('Time [s]')
-ylabel('Euler angles [deg]')
-legend('roll', 'pitch,', 'yaw', 'roll Kalman','pitch Kalman','yaw Kalman')
+subplot(4,1,4)
+plot(navCM.t, navCM.qua(:,4), 'or')
+hold on
+plot(navCM.t, quat(:,4), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('q4','interpreter','latex')
 grid minor
-title('Attitude computer vs Kalman filter. Euler angles. IMU 2.')
-legend('location','southeast')
+legend('q4 KF','q4 th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
+
+% saveas(fh, 'quaternions_wz.png')
 
 
-figure(5)
-plot(navCM.t, quat(:,1), 'r', navCM.t, quat(:,2), 'c', navCM.t, quat(:,3), 'g', navCM.t, quat(:,4), 'k', ...
-     navCM.t, navCM.qua3(:,1), 'or', navCM.t, navCM.qua3(:,2), 'oc', navCM.t, navCM.qua3(:,3), 'og', navCM.t, navCM.qua3(:,4), 'ok')
-xlabel('Time [s]')
-ylabel('quaternions')
-legend('q1', 'q2,', 'q3', 'q4', 'q1 Kalman','q2 Kalman','q3 Kalman', 'q4 Kalman')
+fh = figure(2);
+% fh.WindowState = 'maximized';
+sgtitle('Euler angles.  Architecture 4.','interpreter','latex')
+
+subplot(3,1,1)
+plot(navCM.t, navCM.roll, 'or')
+hold on
+plot(navCM.t, euler(:,1), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('roll [deg]','interpreter','latex')
 grid minor
-title('Attitude computer vs Kalman filter. Quaternions. IMU 3.')
-legend('location','southeast')
+legend('roll KF','roll th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
 
-
-figure(6)
-plot(navCM.t, euler(:,1), 'r', navCM.t, euler(:,2), 'c', navCM.t, euler(:,3), 'g', ...
-     navCM.t, navCM.roll3, 'or', navCM.t, navCM.pitch3, 'oc', navCM.t, navCM.yaw3, 'og')
-xlabel('Time [s]')
-ylabel('Euler angles [deg]')
-legend('roll', 'pitch,', 'yaw', 'roll Kalman','pitch Kalman','yaw Kalman')
+subplot(3,1,2)
+plot(navCM.t, navCM.pitch, 'or')
+hold on
+plot(navCM.t, euler(:,2), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('pitch [deg]','interpreter','latex')
 grid minor
-title('Attitude computer vs Kalman filter. Euler angles. IMU 3.')
-legend('location','southeast')
+legend('pitch KF','pitch th','interpreter','latex')
+legend('location','best')
 
 
-figure(7)
-plot(navCM.t, quat(:,1), 'r', navCM.t, quat(:,2), 'c', navCM.t, quat(:,3), 'g', navCM.t, quat(:,4), 'k', ...
-     navCM.t, navCM.qua4(:,1), 'or', navCM.t, navCM.qua4(:,2), 'oc', navCM.t, navCM.qua4(:,3), 'og', navCM.t, navCM.qua4(:,4), 'ok')
-xlabel('Time [s]')
-ylabel('quaternions')
-legend('q1', 'q2,', 'q3', 'q4', 'q1 Kalman','q2 Kalman','q3 Kalman', 'q4 Kalman')
+subplot(3,1,3)
+plot(navCM.t, navCM.yaw, 'or')
+hold on
+plot(navCM.t, euler(:,3), 'k','LineWidth',2)
+hold off
+xlabel('Time [s]','interpreter','latex')
+ylabel('yaw [deg]','interpreter','latex')
 grid minor
-title('Attitude computer vs Kalman filter. Quaternions. IMU 4.')
-legend('location','southeast')
+legend('yaw KF','yaw th','interpreter','latex')
+legend('location','westoutside')
+ylim([-1,1])
 
-
-figure(8)
-plot(navCM.t, euler(:,1), 'r', navCM.t, euler(:,2), 'c', navCM.t, euler(:,3), 'g', ...
-     navCM.t, navCM.roll4, 'or', navCM.t, navCM.pitch4, 'oc', navCM.t, navCM.yaw4, 'og')
-xlabel('Time [s]')
-ylabel('Euler angles [deg]')
-legend('roll', 'pitch,', 'yaw', 'roll Kalman','pitch Kalman','yaw Kalman')
-grid minor
-title('Attitude computer vs Kalman filter. Euler angles. IMU 4.')
-legend('location','southeast')
+% saveas(fh, 'eulerangles_wz.png')
