@@ -2,13 +2,13 @@ function DCMnb = euler2dcm(euler)
 % euler2dcm converts from Euler angles to DCM navigation to body
 % 
 % INPUT:
-%           euler, 3x1 Euler angles [deg,deg,deg]
+%           euler, 3x1 Euler angles [rad, rad, rad]
 %
 % OUTPUT:
 %           DCMnb, 3x3 navigation to body DCM
 %
 %%
-    roll = deg2rad(euler(1)); pitch = deg2rad(euler(2)); yaw = deg2rad(euler(3));
+    roll = euler(1); pitch = euler(2); yaw = euler(3);
 
     R1 = [cos(yaw)  sin(yaw) 0; ...
             -sin(yaw) cos(yaw) 0; ...
