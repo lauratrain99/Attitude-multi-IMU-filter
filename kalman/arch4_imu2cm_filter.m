@@ -1,4 +1,4 @@
-function [nav] = arch4_imu2cm_filter(imu1, imu2, imu3, imu4)
+function [nav, kf] = arch4_imu2cm_filter(imu1, imu2, imu3, imu4)
 %
 % arch4_imu2cm_filter uses an Extended Kalman filter on four IMU measurements located at a different
 % positions of the body for which the attitude is desired to be computed.
@@ -171,7 +171,11 @@ nav.S  = zeros(N, 576);           % Innovation matrices, S
 nav.ob = zeros(N, 1);           % Number of observable states at each acceleromter data
 nav.deltar = zeros(N, 24);        % Error residual
 nav.wv = zeros(N, 3);           % Corrected angular velocity
-
+nav.gb_dyn_1 = zeros(N,3);
+nav.gb_dyn_2 = zeros(N,3);
+nav.gb_dyn_3 = zeros(N,3);
+nav.gb_dyn_4 = zeros(N,3);
+          
 % Prior estimates for initial update
 kf.deltaxi = [zeros(1,3), imu1.gb_dyn, zeros(1,3), imu2.gb_dyn, zeros(1,3), imu3.gb_dyn, zeros(1,3), imu4.gb_dyn]';            % Error vector state
 kf.Pi = diag([imu1.ini_align_err, imu1.gb_dyn, imu2.ini_align_err, imu2.gb_dyn, imu3.ini_align_err, imu3.gb_dyn, imu4.ini_align_err, imu4.gb_dyn].^2);
@@ -393,6 +397,10 @@ for i = 2:N
           nav.wv_2(i,:)          = wv_corrected_2;
           nav.wv_3(i,:)          = wv_corrected_3;
           nav.wv_4(i,:)          = wv_corrected_4;
+          nav.gb_dyn_1(i,:)      = gb_dyn_1;
+          nav.gb_dyn_2(i,:)      = gb_dyn_2;
+          nav.gb_dyn_3(i,:)      = gb_dyn_3;
+          nav.gb_dyn_4(i,:)      = gb_dyn_4;
 
 end
 

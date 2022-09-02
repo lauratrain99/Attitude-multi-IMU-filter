@@ -665,7 +665,7 @@ save('arch4_mov4_navCM','arch4_mov4_navCM');
 % simulate real motion
 mov4.imuMAIN.t = mov4.imu1.t;
 
-mov4.roll_true = deg2rad(20)*cos(pi/2.3*mov4.imuMAIN.t )  ;
+mov4.roll_true = deg2rad(20)*cos(pi/2.3*mov4.imuMAIN.t );
 mov4.pitch_true = deg2rad(6)*cos(pi/2.3*mov4.imuMAIN.t - 2.3/2);
 mov4.yaw_true = deg2rad(5)*cos(pi/2.3*mov4.imuMAIN.t) + deg2rad(15);
 
