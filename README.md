@@ -1,5 +1,5 @@
 # Attitude-multi-IMU-filter
-Date of the last update Jun 21 2021
+Date of the last update Sep 02 2022
 
 This repo contains the code development for the data fusion algorithm of a multi-IMU configuration to estimate attitude using an Extended Kalman filter. It also has the needed files to read and process the sensors data.
 
@@ -138,10 +138,14 @@ Checklist:
 
                - Only one EKF giving an output of the attitude of the center of mass computed from each IMU.
 
-	  7. Design a program to evaluate the performance of the different algorithm alternatives. Establish conditions to choose one model or other.
 
 
- For the data acquisition, do the following:
+TO BE DONE:
+
+          7. Design a program to evaluate the performance of the different algorithm alternatives. Establish conditions to choose one model or other.
+
+
+For the data acquisition, do the following:
 
 	1. Connect the IMU device to the COM port via USB.
 
